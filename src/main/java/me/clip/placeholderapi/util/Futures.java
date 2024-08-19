@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import me.clip.placeholderapi.PlaceholderAPIPlugin;
 
 public final class Futures {
 
@@ -43,7 +44,7 @@ public final class Futures {
       if (Bukkit.isPrimaryThread()) {
         consumer.accept(value, exception);
       } else {
-        Bukkit.getScheduler().runTask(plugin, () -> consumer.accept(value, exception));
+        PlaceholderAPIPlugin.getScheduler().runTask(() -> consumer.accept(value, exception));
       }
     });
   }

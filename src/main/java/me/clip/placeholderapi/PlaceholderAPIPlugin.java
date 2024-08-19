@@ -43,6 +43,8 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import com.github.Anon8281.universalScheduler.UniversalScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 
 /**
  * Yes I have a shit load of work to do...
@@ -53,6 +55,7 @@ public final class PlaceholderAPIPlugin extends JavaPlugin {
 
   @NotNull
   private static final Version VERSION;
+  private static TaskScheduler scheduler;
   private static PlaceholderAPIPlugin instance;
 
   static {
@@ -152,6 +155,8 @@ public final class PlaceholderAPIPlugin extends JavaPlugin {
 
   @Override
   public void onEnable() {
+    scheduler = UniversalScheduler.getScheduler(this);
+
     setupCommand();
     setupMetrics();
     setupExpansions();
@@ -167,6 +172,10 @@ public final class PlaceholderAPIPlugin extends JavaPlugin {
     }
   }
 
+  public static TaskScheduler getScheduler() {
+    return scheduler;
+  }
+
   @Override
   public void onDisable() {
     getCloudExpansionManager().kill();
@@ -174,7 +183,7 @@ public final class PlaceholderAPIPlugin extends JavaPlugin {
 
     HandlerList.unregisterAll(this);
 
-    Bukkit.getScheduler().cancelTasks(this);
+    PlaceholderAPIPlugin.getScheduler().cancelTasks(this);
 
     adventure.close();
     adventure = null;
@@ -262,8 +271,8 @@ public final class PlaceholderAPIPlugin extends JavaPlugin {
       Class.forName("org.bukkit.event.server.ServerLoadEvent");
       new ServerLoadEventListener(this);
     } catch (final ClassNotFoundException ignored) {
-      Bukkit.getScheduler()
-          .runTaskLater(this, () -> getLocalExpansionManager().load(Bukkit.getConsoleSender()), 1);
+      PlaceholderAPIPlugin.getScheduler()
+              .runTaskLater(() -> getLocalExpansionManager().load(Bukkit.getConsoleSender()), 1);
     }
   }
 
